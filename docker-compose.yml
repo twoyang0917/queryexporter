@@ -8,3 +8,4 @@ services:
     image: queryexporter
     volumes:
       - ./logs:/queryexporter/logs
+      - ./config/config.json:/queryexporter/config/config.json
