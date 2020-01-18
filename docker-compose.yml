@@ -1,0 +1,10 @@
+version: '3.4'
+services:
+  queryexporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    image: queryexporter
+    volumes:
+      - ./logs:/queryexporter/logs
