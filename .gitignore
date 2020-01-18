@@ -1,0 +1,5 @@
+.vscode/*
+venv/*
+examples/*
+logs/*
+config/config.json
