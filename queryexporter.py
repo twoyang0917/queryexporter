@@ -64,13 +64,27 @@ class QueryExporter(object):
 
         return query
 
+    def get_resp(self, url):
+        resp = ''
+        while resp == '':
+            try:
+                resp = requests.get(url)
+                break
+            except:
+                self.logger.warn("Connection refused by the server..")
+                time.sleep(5)
+                self.logger.warn("Retring to connect to %s", url)
+                continue
+
+        return resp
+
     def get_query(self, queryId):
         if self.cache.get(queryId):
             self.logger.info("Skip query %s, HIT cache. It's already inserted into elasticsearch.", queryId)
             return None
 
         url = self.config['presto']['endpoint'] + '/' + queryId
-        resp = requests.get(url)
+        resp = self.get_resp(url)
         self.logger.info("GET %s [status: %s request: %ss]", url, resp.status_code, resp.elapsed.total_seconds())
         if resp.status_code == requests.codes.ok:
             return self._remove_useless_details(resp.json())
@@ -78,7 +92,7 @@ class QueryExporter(object):
             return None
 
     def get_queries(self):
-        queries = requests.get(self.config['presto']['endpoint']).json()
+        queries = self.get_resp(self.config['presto']['endpoint']).json()
         queries_doc = []
         for q in queries:
             if q['state'] in ['FINISHED', 'FAILED']:
