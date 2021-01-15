@@ -95,3 +95,8 @@ PUT /presto_queries-000001/_alias/presto_queries
 docker-compose build
 docker-compose up -d
 ```
+
+### Run in K8S
+```bash
+kubectl apply -k .
+```
