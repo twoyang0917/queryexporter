@@ -1,11 +1,7 @@
 version: '3.4'
 services:
   queryexporter:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    image: queryexporter
+    restart: unless-stopped
+    image: twoyang0917/queryexporter
     volumes:
-      - ./logs:/queryexporter/logs
-      - ./config/config.json:/queryexporter/config/config.json
+      - ./config.json:/queryexporter/config.json

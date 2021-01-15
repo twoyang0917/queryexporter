@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: queryexporter
+spec:
+  selector:
+    matchLabels:
+      app: queryexporter
+  template:
+    metadata:
+      labels:
+        app: queryexporter
+    spec:
+      imagePullSecrets:
+        - name: ucloud-registry
+      volumes:
+      - name: queryexporter-secret
+        secret:
+          secretName: queryexporter-secret
+      containers:
+      - name: queryexporter
+        image: uhub.service.ucloud.cn/bd_ops/queryexporter
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: queryexporter-secret
+          readOnly: true
+          mountPath: /queryexporter/config.json
+          subPath: config.json

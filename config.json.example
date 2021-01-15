@@ -11,10 +11,7 @@
         "index": "presto_queries"
     },
     "log": {
-        "filename": "logs/queryexporter.log",
-        "level": "info",
-        "interval": 1,
-        "backup_count": 30
+        "level": "info"
     },
     "cache_file": "queries.cache",
     "schedule": {

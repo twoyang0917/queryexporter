@@ -2,4 +2,4 @@
 venv/*
 examples/*
 logs/*
-config/config.json
+config.json

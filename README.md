@@ -79,10 +79,7 @@ PUT /presto_queries-000001/_alias/presto_queries
         "index": "presto_queries"
     },
     "log": {
-        "filename": "logs/queryexporter.log",
-        "level": "info",
-        "interval": 1, # Rotate every [interval] day.
-        "backup_count": 30 # Keep last [backup_count] days log.
+        "level": "info"
     },
     "cache_file": "queries.cache", # Just give a name here.
     "schedule": {
@@ -97,9 +94,4 @@ PUT /presto_queries-000001/_alias/presto_queries
 ```bash
 docker-compose build
 docker-compose up -d
-```
-
-### Log
-```bash
-tail -f logs/queryexporter.log
 ```

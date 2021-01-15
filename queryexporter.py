@@ -8,6 +8,7 @@ import time
 import pickledb
 import logging
 import logging.handlers
+import sys
 
 from datetime import datetime
 from elasticsearch import Elasticsearch
@@ -18,7 +19,7 @@ class QueryExporter(object):
         self.prefix_path=os.path.dirname(os.path.realpath(__file__))
 
         # load configuration
-        with open(os.path.join(self.prefix_path, 'config/config.json')) as f:
+        with open(os.path.join(self.prefix_path, 'config.json')) as f:
             self.config = json.load(f)
             f.close()
 
@@ -29,16 +30,11 @@ class QueryExporter(object):
             raise ValueError('Invalid log level: %s' % self.config['log']['level'])
         self.logger.setLevel(numeric_level)
 
-        trfh = logging.handlers.TimedRotatingFileHandler(
-            filename=os.path.join(self.prefix_path, self.config['log']['filename']),
-            when='D',
-            interval=1,
-            backupCount=self.config['log']['backup_count']
-        )
-        trfh.setLevel(numeric_level)
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(numeric_level)
         formatter = logging.Formatter('[%(asctime)s] [%(levelname)-8s] [%(name)-15s] %(message)s')
-        trfh.setFormatter(formatter)
-        self.logger.addHandler(trfh)
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
 
         # initial elasticsearch connection
         self.es = Elasticsearch(
