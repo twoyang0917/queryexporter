@@ -57,8 +57,9 @@ PUT _template/presto_queries_template
 }
 
 # create index and alias
-PUT /presto_queries-000001
-PUT /presto_queries-000001/_alias/presto_queries
+PUT /<presto_queries-{now{yyyy.MM.dd}}>
+PUT /<presto_queries-{now{yyyy.MM.dd}}>/_alias/presto_queries
+GET /<presto_queries-{now{yyyy.MM.dd}}>/_alias
 ```
 
 ### Config
