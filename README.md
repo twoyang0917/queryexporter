@@ -87,40 +87,40 @@ PUT _template/presto_queries_template
           "type": "double"
       },
       "queryStats.userMemoryReservation": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.totalMemoryReservation": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.peakUserMemoryReservation": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.peakTotalMemoryReservation": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.peakTaskUserMemory": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.peakTaskTotalMemory": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.rawInputDataSize": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.processedInputDataSize": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.outputDataSize": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.physicalWrittenDataSize": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.logicalWrittenDataSize": {
-          "type": "byte"
+          "type": "long"
       },
       "queryStats.spilledDataSize": {
-          "type": "byte"
+          "type": "long"
       }
     }
   }
