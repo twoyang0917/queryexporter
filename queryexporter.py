@@ -9,9 +9,12 @@ import pickledb
 import logging
 import logging.handlers
 import sys
+import traceback
 
 from datetime import datetime
 from elasticsearch import Elasticsearch
+from pytimeparse import parse
+from humanfriendly import parse_size
 
 class QueryExporter(object):
     def __init__(self):
@@ -47,6 +50,37 @@ class QueryExporter(object):
         # initial key-value cache
         self.cache = pickledb.load(os.path.join(self.prefix_path, self.config['cache_file']), False)
 
+    def handle_output(self, query):
+        middle_result = self._remove_useless_details(query)
+        return self._human_readable_to_number(middle_result)
+
+    # convert human readable time & size to number for sorting.
+    def _human_readable_to_number(self, query):
+        query['queryStats']['elapsedTime'] = parse(query['queryStats']['elapsedTime']) or 0
+        query['queryStats']['queuedTime'] = parse(query['queryStats']['queuedTime']) or 0
+        query['queryStats']['resourceWaitingTime'] = parse(query['queryStats']['resourceWaitingTime']) or 0
+        query['queryStats']['executionTime'] = parse(query['queryStats']['executionTime']) or 0
+        query['queryStats']['analysisTime'] = parse(query['queryStats']['analysisTime']) or 0
+        query['queryStats']['totalPlanningTime'] = parse(query['queryStats']['totalPlanningTime']) or 0
+        query['queryStats']['finishingTime'] = parse(query['queryStats']['finishingTime']) or 0
+        query['queryStats']['totalScheduledTime'] = parse(query['queryStats']['totalScheduledTime']) or 0
+        query['queryStats']['totalCpuTime'] = parse(query['queryStats']['totalCpuTime']) or 0
+        query['queryStats']['totalBlockedTime'] = parse(query['queryStats']['totalBlockedTime']) or 0
+
+        query['queryStats']['userMemoryReservation'] = parse_size(query['queryStats']['userMemoryReservation']) or 0
+        query['queryStats']['totalMemoryReservation'] = parse_size(query['queryStats']['totalMemoryReservation']) or 0
+        query['queryStats']['peakUserMemoryReservation'] = parse_size(query['queryStats']['peakUserMemoryReservation']) or 0
+        query['queryStats']['peakTotalMemoryReservation'] = parse_size(query['queryStats']['peakTotalMemoryReservation']) or 0
+        query['queryStats']['peakTaskUserMemory'] = parse_size(query['queryStats']['peakTaskUserMemory']) or 0
+        query['queryStats']['peakTaskTotalMemory'] = parse_size(query['queryStats']['peakTaskTotalMemory']) or 0
+        query['queryStats']['rawInputDataSize'] = parse_size(query['queryStats']['rawInputDataSize']) or 0
+        query['queryStats']['processedInputDataSize'] = parse_size(query['queryStats']['processedInputDataSize']) or 0
+        query['queryStats']['outputDataSize'] = parse_size(query['queryStats']['outputDataSize']) or 0
+        query['queryStats']['physicalWrittenDataSize'] = parse_size(query['queryStats']['physicalWrittenDataSize']) or 0
+        query['queryStats']['logicalWrittenDataSize'] = parse_size(query['queryStats']['logicalWrittenDataSize']) or 0
+        query['queryStats']['spilledDataSize'] = parse_size(query['queryStats']['spilledDataSize']) or 0
+        return query
+
     # no need such kind information only when debugging a SQL.
     # it will exceed the limitation if keep these information.
     # Limit of total fields [1000] in index has been exceeded.
@@ -64,10 +98,16 @@ class QueryExporter(object):
         resp = ''
         while resp == '':
             try:
-                resp = requests.get(url)
+                if 'auth' in self.config['presto']:
+                    resp = requests.get(url, verify=False,
+                        auth=(self.config['presto']['auth']['username'], self.config['presto']['auth']['password']))
+                else:
+                    resp = requests.get(url)
                 break
-            except:
+            except Exception as e:
                 self.logger.warn("Connection refused by the server..")
+                self.logger.debug((repr(e)))
+                self.logger.debug("traceback.format_exc():\n%s" % traceback.format_exc())
                 time.sleep(5)
                 self.logger.warn("Retring to connect to %s", url)
                 continue
@@ -83,7 +123,7 @@ class QueryExporter(object):
         resp = self.get_resp(url)
         self.logger.info("GET %s [status: %s request: %ss]", url, resp.status_code, resp.elapsed.total_seconds())
         if resp.status_code == requests.codes.ok:
-            return self._remove_useless_details(resp.json())
+            return self.handle_output(resp.json())
         else:
             return None
 

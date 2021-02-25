@@ -1,6 +1,10 @@
 {
     "presto": {
-        "endpoint": "http://127.0.0.1:8080/v1/query"
+        "endpoint": "http://127.0.0.1:8080/v1/query",
+        "auth": {
+            "username": "test",
+            "password": "test"
+        }
     },
     "elasticsearch": {
         "hosts": ["127.0.0.1"],

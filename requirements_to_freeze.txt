@@ -2,3 +2,5 @@ requests
 elasticsearch
 schedule
 pickledb
+pytimeparse
+humanfriendly

@@ -67,7 +67,11 @@ PUT /presto_queries-000001/_alias/presto_queries
 {
     # API endpoint url of presto
     "presto": {
-        "endpoint": "http://127.0.0.1:8080/v1/query"
+        "endpoint": "http://127.0.0.1:8080/v1/query",
+        "auth": {
+            "username": "test",
+            "password": "test"
+        }
     },
     # Elasticsearch connection
     "elasticsearch": {

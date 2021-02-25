@@ -6,3 +6,5 @@ pickleDB==0.9.2
 requests==2.22.0
 schedule==0.6.0
 urllib3==1.25.7
+pytimeparse==1.1.8
+humanfriendly==9.1
