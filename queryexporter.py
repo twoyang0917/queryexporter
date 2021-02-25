@@ -16,6 +16,9 @@ from elasticsearch import Elasticsearch
 from pytimeparse import parse
 from humanfriendly import parse_size
 
+import urllib3
+urllib3.disable_warnings()
+
 class QueryExporter(object):
     def __init__(self):
         # get absolute path of this file

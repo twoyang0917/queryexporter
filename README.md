@@ -46,12 +46,82 @@ PUT _template/presto_queries_template
   "index_patterns": ["presto_queries-*"],
   "settings": {
     "number_of_shards": 1,
-    "number_of_replicas" : 0,
+    "number_of_replicas" : 2,
     "index": {
         "lifecycle": {
             "name": "presto_queries_policy",
             "rollover_alias": "presto_queries"
         }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "queryStats.elapsedTime": {
+          "type": "double"
+      },
+      "queryStats.queuedTime": {
+          "type": "double"
+      },
+      "queryStats.resourceWaitingTime": {
+          "type": "double"
+      },
+      "queryStats.executionTime": {
+          "type": "double"
+      },
+      "queryStats.analysisTime": {
+          "type": "double"
+      },
+      "queryStats.totalPlanningTime": {
+          "type": "double"
+      },
+      "queryStats.finishingTime": {
+          "type": "double"
+      },
+      "queryStats.totalScheduledTime": {
+          "type": "double"
+      },
+      "queryStats.totalCpuTime": {
+          "type": "double"
+      },
+      "queryStats.totalBlockedTime": {
+          "type": "double"
+      },
+      "queryStats.userMemoryReservation": {
+          "type": "byte"
+      },
+      "queryStats.totalMemoryReservation": {
+          "type": "byte"
+      },
+      "queryStats.peakUserMemoryReservation": {
+          "type": "byte"
+      },
+      "queryStats.peakTotalMemoryReservation": {
+          "type": "byte"
+      },
+      "queryStats.peakTaskUserMemory": {
+          "type": "byte"
+      },
+      "queryStats.peakTaskTotalMemory": {
+          "type": "byte"
+      },
+      "queryStats.rawInputDataSize": {
+          "type": "byte"
+      },
+      "queryStats.processedInputDataSize": {
+          "type": "byte"
+      },
+      "queryStats.outputDataSize": {
+          "type": "byte"
+      },
+      "queryStats.physicalWrittenDataSize": {
+          "type": "byte"
+      },
+      "queryStats.logicalWrittenDataSize": {
+          "type": "byte"
+      },
+      "queryStats.spilledDataSize": {
+          "type": "byte"
+      }
     }
   }
 }
@@ -60,6 +130,10 @@ PUT _template/presto_queries_template
 PUT /<presto_queries-{now{yyyy.MM.dd}}>
 PUT /<presto_queries-{now{yyyy.MM.dd}}>/_alias/presto_queries
 GET /<presto_queries-{now{yyyy.MM.dd}}>/_alias
+
+# delete index and template, then recreate. when test
+DELETE /<presto_queries-{now{yyyy.MM.dd}}>
+DELETE /_template/presto_queries_template
 ```
 
 ### Config
