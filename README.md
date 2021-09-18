@@ -169,13 +169,23 @@ DELETE /_template/presto_queries_template
 }
 ```
 
+### Build docker image on Mac M1
+```bash
+docker buildx create --use --name mbuilder
+docker buildx inspect --bootstrap
+docker buildx build --platform linux/amd64 --load -t queryexporter .
+```
+
 ### Run in docker
 ```bash
+cd docker
 docker-compose build
 docker-compose up -d
 ```
 
 ### Run in K8S
 ```bash
-kubectl apply -k .
+cd k8s; kubectl apply -k .
+# or deploy via helm
+cd helm; helm install --values values.yaml olap queryexporter/
 ```

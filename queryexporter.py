@@ -90,6 +90,8 @@ class QueryExporter(object):
     def _remove_useless_details(self, query):
         if 'outputStage' in query:
             del query['outputStage']
+        if 'inputs' in query:
+            del query['inputs']
         if 'operatorSummaries' in query['queryStats']:
             del query['queryStats']['operatorSummaries']
         if 'stageGcStatistics' in query['queryStats']:
@@ -171,4 +173,3 @@ class QueryExporter(object):
 
 if __name__ == '__main__':
     QueryExporter().run()
-

@@ -11,15 +11,13 @@ spec:
       labels:
         app: queryexporter
     spec:
-      imagePullSecrets:
-        - name: ucloud-registry
       volumes:
       - name: queryexporter-secret
         secret:
           secretName: queryexporter-secret
       containers:
       - name: queryexporter
-        image: uhub.service.ucloud.cn/bd_ops/queryexporter
+        image: queryexporter
         resources:
           limits:
             memory: "1Gi"
