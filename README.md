@@ -56,6 +56,9 @@ PUT _template/presto_queries_template
   },
   "mappings": {
     "properties": {
+      "query": {
+          "type": "text"
+      },
       "queryStats.elapsedTime": {
           "type": "double"
       },
