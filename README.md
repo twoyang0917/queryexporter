@@ -130,9 +130,9 @@ PUT _template/presto_queries_template
 }
 
 # create index and alias
-PUT /<presto_queries-{now{yyyy.MM.dd}}>
-PUT /<presto_queries-{now{yyyy.MM.dd}}>/_alias/presto_queries
-GET /<presto_queries-{now{yyyy.MM.dd}}>/_alias
+PUT /<presto_queries-{now{yyyy.MM.dd}}-000001>
+PUT /<presto_queries-{now{yyyy.MM.dd}}-000001>/_alias/presto_queries
+GET /<presto_queries-{now{yyyy.MM.dd}}-000001>/_alias
 
 # delete index and template, then recreate. when test
 DELETE /<presto_queries-{now{yyyy.MM.dd}}>
