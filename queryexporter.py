@@ -3,7 +3,6 @@
 import os
 import json
 import requests
-import schedule
 import time
 import pickledb
 import logging
@@ -15,6 +14,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 from pytimeparse import parse
 from humanfriendly import parse_size
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 import urllib3
 urllib3.disable_warnings()
@@ -136,7 +136,11 @@ class QueryExporter(object):
         queries = self.get_resp(self.config['presto']['endpoint']).json()
         queries_doc = []
         for q in queries:
-            if q['state'] in ['FINISHED', 'FAILED']:
+            if q['query'].strip().lower() == 'select 1':
+                self.logger.info("Skip query %s, \"%s\"", q['queryId'], q['query'])
+            elif q['query'].strip().lower() == 'select * from system.runtime.nodes':
+                self.logger.info("Skip query %s, \"%s\"", q['queryId'], q['query'])
+            elif q['state'] in ['FINISHED', 'FAILED']:
                 query_doc = self.get_query(q['queryId'])
                 if query_doc is not None:
                     queries_doc.append(query_doc)
@@ -165,11 +169,10 @@ class QueryExporter(object):
                 self.logger.info("Remove %s from cache. duration %s minutes, longer than expire time %s minutes.", q, duration_in_minutes, self.config['expire'])
 
     def run(self):
-        schedule.every(self.config['schedule']['query_export']).minutes.do(self.exporter)
-        schedule.every(self.config['schedule']['clear_cache']).minutes.do(self.clear_cache)
-        while True:
-            schedule.run_pending()
-            time.sleep(3)
+        scheduler = BlockingScheduler(timezone='Asia/Shanghai')
+        scheduler.add_job(self.exporter, "interval", minutes=self.config['schedule']['query_export'])
+        scheduler.add_job(self.clear_cache, "interval", minutes=self.config['schedule']['clear_cache'])
+        scheduler.start()
 
 if __name__ == '__main__':
     QueryExporter().run()
